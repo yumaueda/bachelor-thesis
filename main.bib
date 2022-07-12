@@ -1,43 +1,317 @@
-% VMCS reversing
-@InProceedings{hypervisor_memory_forensics,
-    author="Graziano, Mariano, Lanzi, Andrea, Balzarotti, Davide",
-    editor="Stolfo, Salvatore J., Stavrou, Angelos, Wright, Charles V.",
-    title="Hypervisor Memory Forensics",
-    booktitle="Research in Attacks, Intrusions, and Defenses",
-    year="2013",
-    publisher="Springer Berlin Heidelberg",
-    address="Berlin, Heidelberg",
-    pages="21-40",
-    isbn="978-3-642-41284-4",
-    doi={10.1007/978-3-642-41284-4_2}
+%-------------------------------------
+% Evasion and anti-forensics technique
+%-------------------------------------
+
+@article{dkom,
+  title={Dkom (direct kernel object manipulation)},
+  author={Butler, Jamie},
+  journal={Black Hat Windows Security},
+  year={2004}
 }
 
 
+@article{florio,
+  title={When malware meets rootkits},
+  author={Florio, Elia},
+  journal={Virus Bulletin},
+  volume={12},
+  year={2005}
+}
+
+@InProceedings{linuxmalware,
+  author={Cozzi, Emanuele and Graziano, Mariano and Fratantonio, Yanick and Balzarotti, Davide},   
+  booktitle={2018 IEEE Symposium on Security and Privacy (SP)},
+  title={Understanding Linux Malware},   
+  year={2018},
+  volume={},
+  number={},
+  pages={161-175}
+}
+
+% exploit windows memory translation and tlb incoherences
+@article{shadowwalker,
+  title={Shadow walker: Raising the bar for rootkit detection},
+  author={Sparks, Sherri and Butler, Jamie},
+  journal={Black Hat Japan},
+  volume={11},
+  number={63},
+  pages={504-533},
+  year={2005}
+}
+
+% --------------
+% consideration
+% --------------
+
+% Defeating DMA memory acquisition
+@article{byyond_the_cpu,
+  title={Beyond the CPU: Defeating hardware based RAM acquisition},
+  author={Rutkowska, Joanna},
+  journal={Proceedings of BlackHat DC},
+  volume={2007},
+  year={2007}
+}
+
+
+% using lkm and vtx ept to hide memory containing malicious code
+@article{styx,
+  title = {Styx: Countering robust memory acquisition},
+  journal = {Digital Investigation},
+  volume = {24},
+  pages = {S18-S28},
+  year = {2018},
+  issn = {1742-2876},
+  author = {Ralph Palutke and Felix Freiling},
+  abstract = {Images of main memory are an increasingly important piece of evidence in cybercrime investigations, especially against advanced malware threats, and software tools that dump memory during normal system operation are the most common way to acquire memory images today. Of all proposed methods, Stüttgen and Cohen's robust memory acquistion (as implemented in the pmem tool) can be considered the most advanced technique today. This paper presents Styx, of a proof-of-concept system that perfectly covers its traces against pmem and other tools that perform software-based forensic memory acquisition. Styx is implemented as a loadable kernel module and is able to subvert running 64-bit Linux systems using Intel's VT-x hardware virtualization extension, without requiring the system to reboot. It further uses the second address translation via Intel's EPT to hide behind hidden memory. While exhibiting the limitations of robust memory acquisition, it also shows the potential of undetectable forensic analysis software.}
+}
+
+@article{win10iommu,
+  author={Jean-Christophe Delaunay},
+  title={Practical dma attack on windows 10},
+  url="https://www.synacktiv.com/posts/pentest/practical-dma-attack-on-windows-10.html",
+  year="2018"
+}
+
+% ---------
+% fileless
+% ---------
+
+@article{fileless,
+  title={The evolution of the fileless click-fraud malware Poweliks},
+  author={O’Murchu, Liam and Gutierrez, Fred P},
+  journal={Symantec Corp},
+  year={2015}
+}
+
+% -------------
+% Intel
+% -------------
+
+@article{intelsdm,
+  title={Intel 64 and IA-32 Architectures Software Developer’s Manual Combined Volumes: 1, 2A, 2B, 2C, 2D, 3A, 3B, 3C, 3D, and 4},
+  author={Intel},
+}
+
+@article{nehalem,
+  title={First the Tick, Now the Tock: Next Generation Intel Microarchitecture (Nehalem)},
+  author={Intel}
+}
+
+% ---------------
+% Virtualization
+% ---------------
+
+% requirements for virtualization
+@article{popek_goldberg,
+  title={Formal requirements for virtualizable third generation architectures},
+  author={Popek, Gerald J and Goldberg, Robert P},
+  journal={Communications of the ACM},
+  volume={17},
+  number={7},
+  pages={412--421},
+  year={1974},
+  publisher={ACM New York, NY, USA}
+}
+
+
+% Neted Virtualization
+@inproceedings {turtles,
+author = {Muli Ben-Yehuda and Michael D. Day and Zvi Dubitzky and Michael Factor and Nadav Har{\textquoteright}El and Abel Gordon and Anthony Liguori and Orit Wasserman and Ben-Ami Yassour},
+title = {The Turtles Project: Design and Implementation of Nested Virtualization},
+booktitle = {9th USENIX Symposium on Operating Systems Design and Implementation (OSDI 10)},
+year = {2010},
+address = {Vancouver, BC},
+publisher = {USENIX Association},
+month = {oct}
+}
+
+%-----------------------------
+% VMCS reversing
+%-----------------------------
+@InProceedings{hypervisor_memory_forensics,
+author="Graziano, Mariano
+and Lanzi, Andrea
+and Balzarotti, Davide",
+editor="Stolfo, Salvatore J.
+and Stavrou, Angelos
+and Wright, Charles V.",
+title="Hypervisor Memory Forensics",
+booktitle="Research in Attacks, Intrusions, and Defenses",
+year="2013",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="21-40"
+}
+
+@INPROCEEDINGS{kvm_vm_forensics,
+  author={Zhang, Shuhui and Wang, Lianhai and Han, Xiaohui},
+  booktitle={2014 Tenth International Conference on Computational Intelligence and Security}, 
+  title={A KVM Virtual Machine Memory Forensics Method Based on VMCS}, 
+  year={2014},
+  volume={},
+  number={},
+  pages={657-661}
+}
+
+@article{rekall,
+  author="google",
+  titile="rekall",
+  url="https://github.com/google/rekall"
+}
+
+%-----------------------------
 % DMA-based memory forensics
-@ARTICLE{amoeba,
+%-----------------------------
+%
+% ransomware detection and backup method using a dedicated hardware.
+% detection is done by DMA-based method.
+%
+@article{amoeba,
     author={Min, Donghyun and Ko, Yungwoo and Walker, Ryan and Lee, Junghee and Kim, Youngjae},
     journal={IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems},
     title={A Content-based Ransomware Detection and Backup Solid-State Drive for Ransomware Defense},
     year={2021},
     volume={},
     number={},
-    pages={1-1},
-    doi={10.1109/TCAD.2021.3099084}
+    pages={1-1}
+}
+
+@article{hardware_based_memory_acquistion,
+title = {A hardware-based memory acquisition procedure for digital investigations},
+journal = {Digital Investigation},
+volume = {1},
+number = {1},
+pages = {50-60},
+year = {2004},
+issn = {1742-2876},
+author = {Brian D. Carrier and Joe Grand}
 }
 
 
+@InProceedings{firewire,
+author="Zhang, Lei
+and Wang, Lianhai
+and Zhang, Ruichao
+and Zhang, Shuhui
+and Zhou, Yang",
+editor="Lai, Xuejia
+and Gu, Dawu
+and Jin, Bo
+and Wang, Yongquan
+and Li, Hui",
+title="Live Memory Acquisition through FireWire",
+booktitle="Forensics in Telecommunications, Information, and Multimedia",
+year="2011",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="159-167",
+abstract="Although FireWire-based memory acquisition method has been introduced for several years, the methodologies are not discussed in detail and still lack of practical tools. Besides, the existing method is not working stably when dealing with different versions of Windows. In this paper, we try to compare different memory acquisition methods and discuss their virtues and disadvantages. Then, the methodologies of FireWire-based memory acquisition are discussed. Finally, we give a practical implementation of FireWire-based acquisition tool that can work well with different versions of Windows without causing BSoD problems.",
+isbn="978-3-642-23602-0"
+}
+
+
+
+@inproceedings{lo-phi,
+  title={LO-PHI: Low-Observable Physical Host Instrumentation for Malware Analysis.},
+  author={Spensky, Chad and Hu, Hongyi and Leach, Kevin},
+  booktitle={NDSS},
+  year={2016}
+}
+
+@article{anti_forensic_resilient_memory_acquisition,
+  title = {Anti-forensic resilient memory acquisition},
+  journal = {Digital Investigation},
+  volume = {10},
+  pages = {S105-S115},
+  year = {2013},
+  issn = {1742-2876},
+  author = {Johannes Stüttgen and Michael Cohen}
+}
+
+% -----------------------
+% profile reconstruction
+% -----------------------
+
+% leverage export_symbol
+@article{ksfinder,
+  title={ksfinder-Retrieve exported kernel symbols from physical memory dumps},
+  author={Graziano, Mariano},
+  journal={https://github. com/emdel/ksfinder},
+  year={2016}
+}
+
+@article{volatility_android,
+  title={Universal memory forensic analysis of Android systems},
+  author={Sviderski, Pavel},
+  journal={https://github. com/psviderski/volatility-android},
+  year={2016}
+}
+
+% linux kernel diversity
+@inproceedings{zhang2017research,
+  title={Research on linux kernel version diversity for precise memory analysis},
+  author={Zhang, Shuhui and Meng, Xiangxu and Wang, Lianhai and Liu, Guangqi},
+  booktitle={International Conference of Pioneering Computer Scientists, Engineers and Educators},
+  pages={373--385},
+  year={2017},
+  organization={Springer}
+}
+
+% all profile
+
+@article{autoprofile,
+author = {Pagani, Fabio and Balzarotti, Davide},
+title = {AutoProfile: Towards Automated Profile Generation for Memory Analysis},
+year = {2021},
+issue_date = {February 2022},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {25},
+number = {1},
+issn = {2471-2566},
+journal = {ACM Trans. Priv. Secur.},
+month = {nov},
+articleno = {6},
+numpages = {26}
+}
+
+
+%----
+% VMI
+% ----
+
+@article{vmwatcher,
+  title={Stealthy malware detection and monitoring through VMM-based “out-of-the-box” semantic view reconstruction},
+  author={Jiang, Xuxian and Wang, Xinyuan and Xu, Dongyan},
+  journal={ACM Transactions on Information and System Security (TISSEC)},
+  volume={13},
+  number={2},
+  pages={1--28},
+  year={2010},
+  publisher={ACM New York, NY, USA}
+}
+
+
+% -------
 % NetTLP
+% -------
 @inproceedings {nettlp,
     author = {Yohei Kuga and Ryo Nakamura and Takeshi Matsuya and Yuji Sekiya},
     title = {{NetTLP}: A Development Platform for {PCIe} devices in Software Interacting with Hardware },
     booktitle = {17th USENIX Symposium on Networked Systems Design and Implementation (NSDI 20)},
     year = {2020},
-    isbn = {978-1-939133-13-7},
-    address = {Santa Clara, CA},
     pages = {141-155},
-    url = {https://www.usenix.org/conference/nsdi20/presentation/kuga},
-    publisher = {USENIX Association},
-    month = feb,
+    publisher = {USENIX Association}
+}
+
+% -------------------
+% Memory Acquisition
+% -------------------
+%卒論フォーマットだとjournal=$urlみたいにするほうがよい？邪道だけど，miscは試してない
+@article{lime,
+  author={504ensicsLabs},
+  title={LiME ~ Linux Memory Extractor},
+  url={https://github.com/504ensicsLabs/LiME}
 }
 
 % sample

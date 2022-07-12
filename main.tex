@@ -26,7 +26,7 @@
 \fi
 \usepackage{thesis}
 \usepackage{ascmac}
-\usepackage{graphicx}
+\usepackage[dvipdfmx]{graphicx}
 \usepackage{multirow}
 \usepackage{url}
 \bibliographystyle{jplain}
@@ -35,7 +35,7 @@
 
 % 日本語情報（必要なら）
 \jclass  {卒業論文}                             % 論文種別
-\jtitle    {KVM仮想マシンへの\\DMAによるメモリフォレンジックの適用}    % タイトル。改行する場合は\\を入れる
+\jtitle    {KVM 仮想マシンへの DMA によるメモリフォレンジック手法の提案と実装}    % タイトル。改行する場合は\\を入れる
 \juniv    {慶應義塾大学}                  % 大学名
 \jfaculty  {総合政策学部}               % 学部，学科
 \jauthor  {上田 侑真}                       % 著者
@@ -47,7 +47,7 @@
 
 % 英語情報（必要なら）
 \eclass  {Graduation Thesis}                            % 論文種別
-\etitle    {Applying DMA-based Memory Forensics to Virtual Machines on KVM}      % タイトル。改行する場合は\\を入れる
+\etitle    {Enabling DMA-based Memory Forensics to Virtual Machines on KVM}      % タイトル。改行する場合は\\を入れる
 \euniv  {Keio University}                             % 大学名
 \efaculty  {Faculty of Policy Management}  % 学部，学科
 \eauthor  {Yuma Ueda}                           % 著者
@@ -76,14 +76,16 @@
 
 \pagenumbering{arabic}
 
-\include{01}  % 本文1
-\include{02}  % 本文2
-\include{03}  % 本文3
-\include{04}  % 本文4
+\include{01}  % 序論
+\include{02}  % 背景
+\include{03}  % 提案手法
+\include{04}  % 実装
+\include{05}  % 評価
+\include{06}  % 結論
 
-\include{90_acknowledgement}  % 謝辞。要独自コマンド，include先参照のこと
-\include{91_bibliography}  % 参考文献。要独自コマンド，include先参照のこと
+\include{90_acknowledgement}
+\include{91_bibliography}
 \appendix
-\include{92_appendix}    % 付録
+%\include{92_appendix}    % 付録
 
 \end{document}

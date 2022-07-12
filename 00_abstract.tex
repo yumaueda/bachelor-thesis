@@ -1,37 +1,14 @@
-% ■ アブストラクトの出力 ■
-%	◆書式：
-%		begin{jabstract}〜end{jabstract}	：日本語のアブストラクト
-%		begin{eabstract}〜end{eabstract}	：英語のアブストラクト
-%		※ 不要ならばコマンドごと消せば出力されない。
-
-
-
-% 日本語のアブストラクト
+% Japanese Abstract
 \begin{jabstract}
 
-テンプレートの説明を、テンプレート自身を使って説明する。これは @kurokobo による卒業論文のための\LaTeX テンプレートを修士論文用に改造し、さらにUTF-8化やMakefile等の添付をしたものである。
-
-この部分には一般には論文のアブストラクトを書く。日本語のアブストラクトを書きたいなら、\verb|\begin{jabstract}| と \verb|\end{jabstract}| の間に文章を書けば、今のこのページのように体裁が勝手に整って出力される。英語のアブストラクトは \verb|\begin{eabstract}| と \verb|\end{eabstract}| の間に書けば、次ページのような体裁で出力される。
-
-両方を書けば、日本語と英語の両方のアブストラクトが並んで出力される（この文書はサンブルなので両方書いてある）。ページ順序は、コマンドを書いた順序の通り。どちらか一方のみを出力したい場合は、不要な方をコマンド自体を含め削除する。
-
-このあたりの詳細もあとで書く。基本的には、{\tt main.tex}を上から順にいじっていけばできるはず。
+DMAを用いたメモリフォレンジックの高いステルス性を活かしたマルウェアの検知，解析手法が研究されている. CPUが進化し多くのホスト上で複数のVMが動作することが増えているため，VMにこの手法を適用する利点は大きいが，既存手法ではこれは困難である．本研究ではこの問題をKVM・Linux環境において解決する．シンボルテーブルを圧縮して格納しているデータ構造をメモリ中から探索，展開することでvCPUを管理するデータ構造へのアクセスを実現し，EPTを復元することでVMのメモリ空間へのアクセスを実現する．カーネルのバージョン，コンフィグレーションを変化させた複数の環境を用意し，提案手法でVMのメモリ空間へのアクセスが可能になったことを評価した．
 
 \end{jabstract}
 
 
-
-% 英語のアブストラクト
+% English Abstract
 \begin{eabstract}
 
-Eigo ga dekinai node Roma-ji de soreppoi hunniki wo daseruto iina.
-
-Murippoi desu ne.
-
-Write down your abstract here. Write down your abstract here. Write down your abstract here. Write down your abstract here. Write down your abstract here. Write down your abstract here.
-
- Write down your abstract here. Write down your abstract here. Write down your abstract here. Write down your abstract here. Write down your abstract here. Write down your abstract here. Write down your abstract here. Write down your abstract here. Write down your abstract here. Write down your abstract here. Write down your abstract here. Write down your abstract here.
- 
-Write down your abstract here. Write down your abstract here.
+Malware detection and analysis methods that take advantage of the high stealth of memory forensics using DMA are being studied. As CPUs evolve and multiple VMs are increasingly running on many hosts, it is highly advantageous to apply this technique to VMs. However, this is difficult with existing methods. In this study, we solve this problem in a KVM/Linux environment. We access the data structure that manages the vCPU by searching and extracting the data structure that stores the compressed symbol table from memory, and access the memory space of the VM by restoring the EPT. We evaluated that the proposed method can access the memory space of VMs by preparing multiple environments with different kernel versions and configurations.
 
 \end{eabstract}

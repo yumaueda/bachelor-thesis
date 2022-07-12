@@ -1,22 +1,21 @@
-\chapter{結論}
-\label{chap:conclusion}
+\chapter{実装}
+\label{chap:implementation}
 
-この章では、結論らしいことをかく。
+本章では第\ref{chap:system_overview}章で述べた提案手法を
+実現するシステムの詳細な実装について述べる．
 
-\section{まとめ}
+\section{Kallsyms Extractor}
 
-\LaTeX の環境さえあればスタンダードな体裁の論文がたぶんだれでも作れる程度のテンプレートにはなっているはず。がんばって卒業しよう。
+Kallsyms Extractorは第\ref{chap:system_overview}章で述べた手法を
+実行するプログラムであり，C言語で実装されている．
 
+Kallsyms Extractorの機能はシンボルテーブルの復元のみであり，
+ユーザは復元されたシンボルテーブルを読み込むことさえできればよい．
+よってシステムをシンプルなものにするため，Kallsyms Extractorは
+復元したTarget Hostのシンボルテーブルをファイルとして出力する形式で
+実装した．
 
-\section{大事なこと}
+\section{VM Memory Mapper}
 
-箇条書きで列挙する。
-
-\begin{itemize}
- \item ぐぐる。これは単なる\LaTeX だし、\LaTeX はもう枯れた技術だから、調べれば文献はいくらでもある。
- \item 先生を頼る。
- \item 単位をきちんとる。
- \item 卒業する。
-\end{itemize}
-
-
+VM Memory MapperはNetTLPを用いてTarget Hostのメモリから
+VMのメモリ空間を復元するのみ

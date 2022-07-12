@@ -1,251 +1,138 @@
-\chapter{\LaTeX の書き方}
-\label{chap:latex}
+\chapter{提案手法の概要}
+\label{chap:system_overview}
 
-この章では、よく使う\LaTeX のコマンドを説明する。足りない部分はぐぐればだいたいわかると思う。最初に書いておくと、数式を書く方法は、ぼく自身使わなかったので書いていない。ぼくのいた研究室でごりごり数式をたくさん書く必要のあるひとは、研究の種類からするとあまり居ない気がする。
+i
+本章では，まず提案手法を実現するためのシステムの概要を示し，
+次にシステムを構成する各コンポーネントの詳細について述べる．
 
-\section{主なコマンド}
+本研究で提案するシステムはMonitor Host，Target Hostの2ホスト間で動作し，
+NetTLP\cite{nettlp}，Kallsyms Extractor，VM Memory Mapperの3つのコンポーネントからなる．
 
-\subsection{章と節}
-
-文書構造を明確にする大事なもの。目次はこれらのコマンドをもとに作られる。例えば、この第\ref{chap:latex}章の冒頭部分はこのようなソースで書かれている。
-
-\begin{itembox}[l]{{\tt 03.tex}}
-\begin{verbatim}
-\chapter{\LaTeX の書き方}
-\label{chap:latex}
-
-この章では、よく使う\LaTeX のコマンドを説明する。（略）
-
-\section{主なコマンド}
-
-\subsection{章と節}
-
-文書構造を明確にする大事なもの。目次はこれらのコマンドをもとに作られる。例えば、この第\ref{chap:latex}章の冒頭部分はこのようなソースで書かれている。
-\end{verbatim}
-\end{itembox}
-
-章は \verb|\chapter{見出し}|、節は \verb|\section{見出し}|、小節は \verb|\subsection{見出し}|、小々節は \verb|\subsubsection{見出し}| を使う。表\ref{tb:chap}に一覧する。
-
-\begin{table}[htbp]
-  \caption{章と節のコマンド}
-  \label{tb:chap}
-  \begin{center}\begin{tabular}{c|c}
-    \hline
-    コマンド&用途\\\hline\hline
-    \verb|\chapter{見出し}|&章\\\hline
-    \verb|\section{見出し}|&節\\\hline
-    \verb|\subsection{見出し}|&小節\\\hline
-    \verb|\subsubsection{見出し}|&小々節\\\hline
-    \end{tabular}\end{center}
-\end{table}
-
-\subsubsection{小々節見出しサンプルその1}
-
-小々節は上のように \verb|\subsubsection{タイトル}| で書けるけれど、あまり文書の階層構造が深いことは望ましくないので、多用しなければならないようなら文書構造を見直したほうがよいと思う。
-
-\subsubsection{小々節見出しサンプルその2}
-
-小々節は、章や節、小節のように {\tt N.N.N} といった番号ではなくて、括弧付きの番号で出力される。かつ、目次には出力されない。
-
-\subsection{図}
-
-図は次のように出力される（図\ref{fig:sample1}）。
-
-\begin{figure}[htbp]
-    \begin{center}
-       \fbox{\includegraphics[width=50mm]{image.eps}}
-    \end{center}
-    \caption{図の例}
-    \label{fig:sample1}
+\begin{figure}[h]
+  \includegraphics[scale=0.305]{system_overview.png}
+  \caption{提案手法の概要}
+  \label{fig:sysytem_overview}
 \end{figure}
 
-ソースでは次のように記述している。
+Target HostはIntelプロセッサを搭載し，ホストOSはLinuxであり，KVM仮想マシンが実行されている．
+NetTLPは提案するシステムの中で，Target Hostの物理メモリ空間を取得しMonitor Hostに
+転送する役割を担う．
+Kallsyms ExtractorはNetTLPを用いて取得したTarget Hostの物理メモリ上のデータから
+ホストOSのシンボルテーブルを復元する．
+VM Memory Mapperは復元されたホストOSのシンボルテーブルを用いて
+ホストOS上の各VMを管理する構造体にアクセスし，EPTを復元する．その後，復元したEPTを走査し
+内部にGPAからHPAのマップを保持する．
+Applicationは本システムを利用し，VMへDMAによるメモリフォレンジックを行うアプリケーションである．
+ApplicationがあるGPA上のデータの取得を要求する際，VM Memory Mapperを用いて
+GPAをHPAに変換することでVMのメモリ空間へのアクセスを実現している．
 
-\begin{itembox}[l]{{\tt 03.tex}}
-\begin{verbatim}
-図は次のように出力される（図\ref{fig:sample1}）。
 
-\begin{figure}[htbp]
-    \begin{center}
-       \fbox{\includegraphics[width=40mm]{image.eps}}
-    \end{center}
-    \caption{図の例}
-    \label{fig:sample1}
+\section{NetTLP}
+
+システムのうちTarget Hostのメモリ取得を担う部分としてNetTLP\cite{nettlp}を利用した．
+NetTLPは本来PCIeデバイスのプロトタイピングを想定したプラットフォームである．
+NetTLP Adapterと呼ばれるPCIeデバイスをインストールしたホストのルートコンプレックスと
+NetTLP AdapterにEthernetで接続された外部のホストとの間で
+UDPでカプセリングされたDMA RequestなどのTLPをやり取りすることが可能である．
+また，TLPをカプセリングして送受信する処理を担うLibTLPも用意されている．
+本システムではこれらを利用してTargetのルートコンプレックスにDMA Read Requestを送信し，
+Target Hostの物理メモリ上のデータを取得している．
+
+\section{Kallsyms Extractor}
+
+
+Kallsyms ExtractorはNetTLPを経由して取得したTarget Hostの物理メモリ上のデータから
+ホストOSのシンボルテーブルを復元する．
+
+物理メモリ上のデータを解析するためにはカーネル内の構造体のアドレスを知る必要がある．
+シンボルテーブルには多くの重要な構造体のアドレスが格納されており，これを復元するための
+研究は多く行われてきた\cite{ksfinder}\cite{volatility_android}
+\cite{zhang2017research}\cite{autoprofile}．しかし，これらのアプローチはシンボルテーブルの一部しか復元できないか，全てを復元できるがエミュレータを用いなるなど複雑な処理を実行する必要があるものであった．
+
+そこで，Linuxカーネル内におけるシンボルテーブルの構造を利用し，
+非常にシンプルな処理で全てのシンボルテーブルを復元することができるKallsyms Extractorを提案する．
+
+以下にLinuxカーネル内におけるシンボルテーブルの構造を図示する（図\ref{fig:kallsyms}）．
+Linuxのシンボルテーブルは巨大であるため
+シンボル名は圧縮されて格納される．シンボルのアドレスは8バイトのベースアドレスに対する
+4バイトの相対アドレスとして表現され，データ量の削減が試みられている．
+シンボル名はその一部の文字列と対応する1バイトのトークンに変換され，トークン数＋トークン配列の形式でu8型の配列であるkallsyms\_namesに格納されている．
+kallsyms\_namesに含まれるトークンをインデックスとしてu16型の配列kallsyms\_token\_indexに
+アクセスすることでchar型の配列であるkallsyms\_token\_table内のインデックスを得られる．
+kallsyms\_token\_table内のこのインデックスからnullが現れるまでがトークンに対応する文字列となる．
+例えばkallsyms\_names[0]=2であればkallsyms\_names[1,3)に
+シンボル名の一部に対応するトークンが格納されている．
+kallsyms\_names[1,3)=\{0x00,0x01\}であれば1つめのシンボル名はhowmmとなる．
+シンボルのアドレスはkallsyms\_relative\_baseからの相対アドレスとして配列kallsyms\_offsets
+に格納されている．
+
+kallsyms\_names，kallsyms\_token\_tableの値はカーネルのバージョンとコンフィグレーションが
+一定であれば一意に定まる．
+Kallsyms Extractorは予め調査したカーネルのバージョン，コンフィグレーションに対する
+これらの配列の値のデータをシグネチャとして，メモリ上からシンボルテーブルを復元するために
+必要なデータ構造である
+
+\begin{enumerate}
+  \item kallsyms\_names
+  \item kallsyms\_token\_table
+  \item kallsyms\_token\_index
+  \item kallsyms\_num\_syms
+  \item kallsyms\_relative\_base
+  \item kallsyms\_offsets
+\end{enumerate}
+
+の位置を特定する．昨今のPCの物理メモリ空間は巨大であるが
+探索する必要のある範囲はKASLRのオフセットを考慮した512MiBのカーネルテキスト領域のみであることと
+対象とするカーネルについて少しでも事前情報があればシグネチャの候補を削減できることから
+処理は軽量である．
+これらのデータ構造のメモリ上での位置はビルドに使用されたコンパイラ・リンカ等によって
+微妙に異なるが，そのパターンはごく僅かであるため使用したシグネチャに対するカーネルバージョン，コンフィグレーションに
+対応するシンボルが復元されるまで総当りを行うことで問題なくシンボルテーブルの復元が行える．
+
+
+\begin{figure}[h]
+  \includegraphics[scale=0.45]{kallsyms.png}
+  \caption{Linuxカーネル内におけるシンボルテーブルの構造（値は例）}
+  \label{fig:kallsyms}
 \end{figure}
-\end{verbatim}
-\end{itembox}
 
-\verb|\begin{figure}[htbp]|  の{\tt htbp}は、表示位置の優先順位の設定。基本的に\LaTeX では、図の挿入位置は強制的には指定できない。いくつか候補を指定しておくと、候補のなかの優先度の高い順に、図を入れられるスペースがあるかどうかを調べて、入れられればそこに、入れられなければ次の候補のスペースを調べる、という処理が行われる。{\tt h}はこのコマンドを書いたその場所に、{\tt t}はページの一番上に、{\tt b}はページの一番下に、{\tt p}は画像だけ別ページに、それぞれ配置する。基本的には{\tt htbp}のように全部書いておけば問題ない。
+\section{VM Memory Mapper}
 
-\verb|\includegraphics| コマンドで、図のサイズと挿入するファイルを指定する。上の例ではサイズは {\tt width=50mm} として幅を指定したけれど、ここは他にも {\tt height=30mm} として高さを指定してもよいし、{\tt scale=0.5} として拡大率を指定してもよい。画像は最近の \LaTeX 環境であれば{\tt *.eps}以外でも使える。ただし、{\tt bb} (Bounding Box) として画像の大きさを指定する必要があることも多い。
-以下はJPEG画像を使用する例。
+VM Memory MapperはホストOSの物理メモリ上のデータからホストOS上で動作するVMの
+メモリ空間を復元する．これはホストOS上のVM数，
+各VMのvCPU数，使用しているEPTのアドレス，ネストの有無を求めることで実現できる．
 
-\begin{itembox}[l]{{\tt 03.tex}}
-\begin{verbatim}
-\begin{figure}[htbp]
-    \begin{center}
-       \fbox{\includegraphics[width=40mm,bb=0 0 640 480]{image.jpg}}
-    \end{center}
-    \caption{図の例}
-    \label{fig:sample1}
+以下VM Memory Mappperが上述の情報を求める手法を記述する（図\ref{fig:ept_pointer}）．
+VM Memory MapperはまずKallsyms Extractorが復元した
+シンボルテーブルを用いてカーネルシンボルlinux\_bannerにアクセスし，カーネルのバージョンを
+特定する．カーネルのバージョン情報を得たことによりKVMがVM，vCPUの管理に用いる
+データ構造の定義を確定させることが出来る．
+次にシンボルテーブルからカーネルシンボルvm\_listのアドレスを求める．
+vm\_listはKVMがVMを管理するために各VMにつき1つ作成するkvm構造体の
+LIST\_HEADマクロによるリンクドリストのアドレスを示している．
+kvm構造体のリンクドリストの要素数から，Target Host上に存在する仮想マシンの数を
+求めることが出来る．
+kvm構造体は自身に対応するVMの各vCPUを表すkvm\_vcpu構造体のポインタの配列を
+vcpusメンバに格納している．この時点でVMの有するvCPU数も判明する．
+vCPUに関する情報のうちCPUアーキテクチャに固有のものは
+kvm\_vcpu構造体の配下のkvm\_vcpu\_arch構造体であるarchメンバに格納される．
+そしてkvm\_vcpu\_arch構造体のメンバであるkvm\_mmu構造体のroot\_hpaメンバから
+各vCPUが使用するEPTのアドレスを求めることが出来る．
+VM Memory MapperはEPTに対してPage Walkingを行い，GPAからHPAへのマッピングを
+記憶し，ユーザにGPAからHPAへの変換を求められた場合にこれを使用する．
+
+この手法においてアクセスされるカーネル内のデータ構造の定義中には
+カーネルコンフィグレーションが影響する部分は非常に少なく，影響する場合も
+本研究が対象とするIntelプロセッサ上のKVM・Linux環境の範囲では
+コンフィグレーションは一定である．
+そのため各データ構造のメンバのメモリ中でのオフセットは
+カーネルバージョン，ビルド環境につき一意に定まり
+VM Memory Mapperはビルド環境による差異について総当り方式で試行を行うのみで
+VMのメモリ空間を復元できる．
+
+
+\begin{figure}[h]
+  \includegraphics[scale=0.45]{ept_pointer.png}
+  \caption{EPTへのポインタの格納位置}
+  \label{fig:ept_pointer}
 \end{figure}
-\end{verbatim}
-\end{itembox}
-
-bbの指定は、上記のように{\tt *.tex} ファイルの中で指定してもいいが、
-{\tt *.bb}ファイルを作っておく方法もある。
-ターミナルで{\tt ebb}コマンドを使用すると{\tt *.bb}ファイルを簡単に作れる。
-
-
-\begin{itembox}[l]{ebbコマンドの例}
-\begin{verbatim}
-% ebb image.jpg
-\end{verbatim}
-\end{itembox}
-
-
-\verb|\includegraphics| を \verb|\fbox| に入れると、画像に枠を付けられる。
-
-\verb|\caption| コマンドで図の見出しを指定できる。図の見出しは、図の下に表記するので注意。ここで指定した見出しが、図の目次に表示される。
-
-\verb|\label| コマンドでは図の参照用ラベルを設定できる。本文中、\verb|\ref| コマンドで参照用ラベルを指定すると、対応した図の番号が自動的に挿入される。これも目次や参考文献と同様、最低二回のコンパイルが必要なので注意。
-
-図を二つ横に並べたい場合は、次のように書く（図\ref{fig:sample2}、図\ref{fig:sample3}）。
-
-\begin{figure}[htbp]
-  \begin{minipage}{0.5\hsize}
-    \begin{center}
-       \fbox{\includegraphics[width=40mm]{image.eps}}
-    \end{center}
-    \caption{図を並べる例1}
-    \label{fig:sample2}
-  \end{minipage}
-  \begin{minipage}{0.5\hsize}
-    \begin{center}
-       \includegraphics[width=40mm]{image.eps}
-    \end{center}
-    \caption{図を並べる例2、枠なし}
-    \label{fig:sample3}
-  \end{minipage}
-\end{figure}
-
-\begin{itembox}[l]{{\tt 03.tex}}
-\begin{verbatim}
-図を二つ横に並べたい場合は、次のように書く（図\ref{fig:sample2}、図\ref{fig:sample3}）。
-
-\begin{figure}[htbp]
-  \begin{minipage}{0.5\hsize}
-    \begin{center}
-       \fbox{\includegraphics[width=40mm]{image.eps}}
-    \end{center}
-    \caption{図を並べる例1}
-    \label{fig:sample2}
-  \end{minipage}
-  \begin{minipage}{0.5\hsize}
-    \begin{center}
-       \fbox{\includegraphics[width=40mm]{image.eps}}
-    \end{center}
-    \caption{図を並べる例2}
-    \label{fig:sample3}
-  \end{minipage}
-\end{figure}
-\end{verbatim}
-\end{itembox}
-
-
-\subsection{表}
-
-表は次のように出力される（表\ref{tb:sample1}）。
-
-\begin{table}[htbp]
-  \caption{表の例}
-  \label{tb:sample1}
-  \begin{center}
-  \begin{tabular}{l|c|r}
-    \hline
-    種類	&味&評価\\\hline\hline
-    ドラ焼き&甘い&好き\\\hline
-    メロンパン&カリもふ&好き\\\hline
-    クリームパン&神&すごく好き\\\hline
-  \end{tabular}\end{center}
-\end{table}
-
-ソースでは次のようになっている。
-
-\begin{itembox}[l]{{\tt 03.tex}}
-\begin{verbatim}
-表は次のように出力される（表\ref{tb:sample1}）。
-
-\begin{table}[htbp]
-  \caption{表の例}
-  \label{tb:sample1}
-  \begin{center}
-  \begin{tabular}{l|c|r}
-    \hline
-    種類	&味&評価\\\hline\hline
-    ドラ焼き&甘い&好き\\\hline
-    メロンパン&カリもふ&好き\\\hline
-    クリームパン&神&すごく好き\\\hline
-  \end{tabular}\end{center}
-\end{table}
-\end{verbatim}
-\end{itembox}
-
-{\tt htbp}や \verb|\caption| と \verb|\label| は図と同様。ただし表のタイトルは表の上に書く。
-
-\verb|\begin{tabular}{l|{\tt \textbar}{\tt c}{\tt \textbar}\verb|r}|で横方向のセルを指定する。{\tt c}は中央揃え、{\tt l}は左揃え、{\tt r}は右揃えのセルを作る。{\tt \textbar}は垂直方向の罫線を表す。{\tt c}か{\tt l}か{\tt r}を必要なセルの数だけ並べて、セルの間に罫線が必要なら{\tt \textbar}を入れればよい。
-
-セルの中の文字は、{\tt \&}で区切って並べる。行と行は \verb|\\| で区切る。水平方向の罫線が必要なら、\verb|\hline| を書く。
-
-水平方向や垂直方向のセルの結合もできる。例を示すので、くわしくはぐぐろう。説明がめんどう。\verb|\multirow|、\verb|\multicolumn|、\verb|\cline| を使うとできる。
-
-\begin{table}[htbp]
-  \caption{セルを結合した例}
-  \label{tb:sample2}
-  \begin{center}
-  \begin{tabular}{c|c|c}
-    \hline
-    ほげ&ふー&ばー\\\hline\hline
-    \multirow{2}{*}{ほげほげ}&\multicolumn{2}{c}{ふーふー} \\\cline{2-3}
-    &ふーふーふー&ばーばーばー\\\hline
-  \end{tabular}
-  \end{center}
-\end{table}
-
-\begin{itembox}[l]{{\tt 03.tex}}
-\begin{verbatim}
-\begin{table}[htbp]
-  \caption{セルを結合した例}
-  \label{tb:sample2}
-  \begin{center}
-  \begin{tabular}{c|c|c}
-    \hline
-    ほげ&ふー&ばー\\\hline\hline
-    \multirow{2}{*}{ほげほげ}&\multicolumn{2}{c}{ふーふー} \\\cline{2-3}
-    &ふーふーふー&ばーばーばー\\\hline
-  \end{tabular}
-  \end{center}
-\end{table}
-\end{verbatim}
-\end{itembox}
-
-
-\subsection{脚注}
-
-脚注は \verb|\footnote| コマンドを使う。例えばこんな感じ\footnote{ページの下に小さく説明を出せる}。
-
-\begin{itembox}[l]{{\tt 03.tex}}
-\begin{verbatim}
-例えばこんな感じ\footnote{ページの下に小さく説明を出せる}。
-\end{verbatim}
-\end{itembox}
-
-\section{その他のコマンド}
-
-ぐぐる\footnote{http://www.google.co.jp/}。
-
-特殊なことは何もしていないテンプレートなので、ぐぐって出たことはだいたいそのまま何でも使える。
-
-あるいは、このファイル自体も\LaTeX で書かれているわけだから、これの{\tt *.tex}を見るのもよいかもしれない。
-
-

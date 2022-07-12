@@ -1,0 +1,57 @@
+\chapter{評価}
+\label{chap:evaluation}
+
+本章では提案手法によりIntelプロセッサ上のKVM・Linux環境において
+DMAによるメモリフォレンジックをVMに適用することが可能になったことを評価する．
+評価に用いたTarget Hostのスペックは以下の通りである．
+\begin{itemize}
+  \item CPU: Intel Core i7-9700K @ 3.60GHz
+  \item RAM: 32GiB
+  \item OS: Ubuntu 18.04.6 LTS
+  \item SSD: 250GiB
+\end{itemize}
+提案手法が一般的に適用できることを確認するため，
+Target Hostのカーネルのバージョン，コンフィグレーションを変化させた
+複数のKVM・Linux環境を用意した（表\ref{tab:evaluation_environment}）．
+更に各評価環境においてVMの構成を変化させながら提案手法を使用し，
+VMのメモリ空間を復元する実験を行った．
+評価に用いたVMの構成を以下に示す（表\ref{tab:vm_configuration}）．なおVMのOSや
+カーネルバージョン，コンフィグレーションは全てホストOSのものと同一である．
+VMのメモリ空間が復元できたことは，VMのシンボルテーブルからlinux\_bannerの
+GPAを求めた後に提案手法を用いて該当GPAにアクセスし．正しいバナーが表示される
+ことをもって確認した．
+
+実験の結果，全ての評価環境，全てのVMの構成において
+VMのメモリ空間を復元できることが確認できた．
+
+\begin{table}[htbp]
+\caption{評価環境の一覧}
+\label{tab:evaluation_environment}
+\hbox to\hsize{\hfil
+\begin{tabular}{l|ll}\hline\hline
+& Kernel Version & Flavours \\\hline
+環境1 & 4.15.0 & generic    \\
+環境1 & 4.15.0 & lowlatency \\
+環境2 & 4.18.0 & generic    \\
+環境2 & 4.18.0 & lowlatency \\
+環境3 & 5.0.0  & generic    \\
+環境3 & 5.0.0  & lowlatency \\
+環境3 & 5.4.0  & generic    \\
+環境3 & 5.4.0  & lowlatency \\\hline
+\end{tabular}\hfil}
+\end{table}
+
+
+
+\begin{table*}[htbp]
+\caption{各評価環境におけるVMの構成一覧}
+\label{tab:vm_configuration}
+\hbox to\hsize{\hfil
+\begin{tabular}{l|llll}\hline\hline
+                & L1 VM数 & L1 VM RAM & L2 VM数              & L2 VM RAM \\\hline
+Single          & 1       & 8GiB      & 0                    & N/A       \\
+Multiple        & 2       & 8GiB      & 0                    & N/A       \\
+Nested Single   & 1       & 8GiB      & 1                    & 4GiB      \\
+Nested Multiple & 2       & 8GiB      & 2（1 on each L1 VM） & 4GiB each \\\hline
+\end{tabular}\hfil}
+\end{table*}
